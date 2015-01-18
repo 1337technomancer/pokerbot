@@ -18,6 +18,8 @@ var rounds = 5;
 // Setting up objects and basic game variables
 
 var suits = ["Spades", "Clubs", "Diamonds", "Hearts"];
+String.prototype.contains = function(it) { return this.toLowerCase().indexOf(it.toLowerCase()) != -1; };
+
 
 function Card(number, suit) {
     this.number = number;
@@ -53,7 +55,8 @@ function Deck() {
     };
 }
 
-function Player() {
+function Player(name) {
+    this.name = name;
     this.brunos = initial;
     this.wins = 0;
     this.losses = 0;
@@ -67,12 +70,39 @@ function Player() {
     this.subtract = function(n) {
         this.brunos -= n;
     };
+    this.pm = function(message) {
+        pm(this.name, message);
+    };
 }
 
 function Round() {
-    this.players = [];
     this.area = [];
     this.pot = 0;
+}
+
+function Match() {
+    this.round = null;
+    this.roundcount = 1;
+    this.players = [];
+    this.start = function() {
+        CLIENT.submit("A new match is about to start! Hurry and join!");
+        CLIENT.submit("/?javascript:CLIENT.submit('!join');|Join!");
+        this.players = getJoins();
+        this.round = new Round();
+        this.round.start();
+    };
+    this.nextRound = function() {
+        if (roundcount <= 5) {
+            roundcount++;
+            this.round = new Round();
+        } else {
+            this.end();
+        }
+    };
+    this.end = function() {
+        CLIENT.submit("Match ended, prepare for another one...");
+        game = new Match();
+    };
     this.addPlayer = function(player) {
         players.push(player);
     };
@@ -82,6 +112,39 @@ function Round() {
     };
 }
 
+function sleep(seconds) {
+    var request = new XMLHttpRequest();
+    request.open("GET", 
+                 "http://bruno02468.com/wait.php?time=" + seconds * 1e6,
+                 false);
+    request.send();
+}
+
+function pm(user, message) {
+    CLIENT.submit("/pm " + user + "|" + message);
+}
+
+var joining = false;
+var joiners = [];
+function addJoin(user) {
+    if (joining && !joiners.indexOf(user) > -1) {
+        joiners.push(user);
+    } else {
+        pm(user, "#redCan't join at this time.");
+    }
+}
+function allowJoins() {
+    joining = true;
+    joiners = [];
+    setTimeout(function() {
+        joining = false;
+    }, waitForJoin*1000);
+}
+function getJoins() {
+    allowJoins();
+    sleep(waitForJoin);
+    return joiners;
+}
 
 // Booting up and doing the stuff
 CLIENT.submit("/login Dealer brunoisgod666");
@@ -90,3 +153,28 @@ CLIENT.submit("/font Monterrat");
 CLIENT.submit("/color #81aa00");
 CLIENT.submit("Pokerbot booted up and ready to go!");
 
+var game = new Match();
+
+//Handling user input
+CLIENT.on('message', function(data) {
+    var r = $('#messages').children().slice(-1)[0].outerHTML.search(/message (personal-message|general-message|error-message|note-message|system-message)/g);
+    var text = data.message.trim();
+    if (data.nick !== undefined)
+    var name = data.nick;
+    var trueMessage = parser.removeHTML(parser.parse(text));
+    trueMessage = trueMessage.trim();
+    argumentString = trueMessage.substring(trueMessage.indexOf(" ") + 1);
+    arguments = argumentString.split(" ");
+    
+    if (name !== botnick) {
+        
+        //COMMAND HANDLERS
+        if (text.contains("!join")) {
+            addJoin(name);
+        } else if (text.contains("!")) {
+            
+        } else if (text.contains("!")) {
+            
+        }
+    }
+}
