@@ -202,6 +202,8 @@ send("/login brunoisgod666 Dealer");
 send("/flair $Montserrat|#7e0800/^Dealer");
 send("/font Montserrat");
 send("/style #81aa00");
+send("/mute");
+send("/safe");
 send("Pokerbot coded by Bruno02468 booted up and ready to go!");
 
 var game = new Match();
