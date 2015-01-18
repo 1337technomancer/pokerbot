@@ -52,7 +52,7 @@ function Card(number, suit) {
                 n = "King";
                 break;
         }
-        return color + n + " of " + suit;
+        return color + n + " of " + suit + "|";
     };
 }
 
@@ -61,16 +61,16 @@ function Deck() {
     this.populate = function() {
         for (s in suits) {
             for (var n = 1; n <= 13; n++) {
-                cards.push(new Card(n, suits[s]));
+                this.cards.push(new Card(n, suits[s]));
             }
         }
     };
     this.addCard = function(card) {
-        cards.push(card);
+        this.cards.push(card);
     };
     this.removeCard = function(card) {
-        var index = cards.indexOf(card);
-        cards = cards.splice(index, 1);
+        var index = this.cards.indexOf(card);
+        this.cards = this.cards.splice(index, 1);
     };
     this.randomCard = function() {
         var c = cards[Math.floor(Math.random()*cards.length)];
@@ -101,13 +101,12 @@ function Player(name) {
 function Round(parent) {
     this.area = [];
     this.pot = 0;
-    this.players = parent.players;
     this.start = function() {
         send("A new round is starting! Cards are now being dealt!");
         var deck = new Deck();
         deck.populate();
-        for (p in players) {
-            var player = players[p];
+        for (p in parent.players) {
+            var player = parent.players[p];
             var nhand = [deck.randomCard(), deck.randomCard()];
             player.hand = nhand;
             var msg = "You've been dealt: " + nhand[0].toString();
@@ -123,8 +122,8 @@ function Match() {
     this.roundcount = 1;
     this.players = [];
     this.start = function() {
-        send("A new match is about to start! Hurry and join!");
-        linksend("!join", "Join Match!");
+        var m = "A new match is about to start! Hurry and ";
+        send(m + mklink("!join", "join!"));
         var ps = getJoins();
         for (i in ps) {
             this.addPlayer(new Player(ps[i]));
@@ -144,6 +143,7 @@ function Match() {
     this.end = function() {
         send("Match ended, prepare for another one...");
         game = new Match();
+        game.start();
     };
     this.addPlayer = function(player) {
         players.push(player);
@@ -166,9 +166,13 @@ function pm(user, message) {
     send("/pm " + user + "|" + message);
 }
 
-function linksend(message, text) {
+function mklink(message, text) {
     var m = "/?javascript:CLIENT.submit(\"" + message + "\");|" + text;
-    send(m);
+    return mkpm(m + "|");
+}
+
+function mkpm(message) {
+    return "/pm Dealer|" + message;
 }
 
 function send(message) {
@@ -184,16 +188,12 @@ function addJoin(user) {
         pm(user, "#redCan't join at this time.");
     }
 }
-function allowJoins() {
+function getJoins() {
     joining = true;
     joiners = [];
-    setTimeout(function() {
-        joining = false;
-    }, waitForJoin*1000);
-}
-function getJoins() {
-    allowJoins();
     sleep(waitForJoin);
+    joining = false;
+    send("Joining period is over. New match starting!");
     return joiners;
 }
 
@@ -224,8 +224,8 @@ CLIENT.on('message', function(data) {
         //COMMAND HANDLERS
         if (text.contains("!join")) {
             addJoin(name);
-        } else if (text.contains("!")) {
-            
+        } else if (text.contains("!leave")) {
+            game.kickPlayer(name);
         } else if (text.contains("!")) {
             
         }
