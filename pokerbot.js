@@ -167,7 +167,7 @@ function pm(user, message) {
 }
 
 function linksend(message, text) {
-    var m = "/?javascript:send(\"" + message + "\");|" + text;
+    var m = "/?javascript:CLIENT.submit(\"" + message + "\");|" + text;
     send(m);
 }
 
@@ -207,6 +207,7 @@ send("/safe");
 send("Pokerbot coded by Bruno02468 booted up and ready to go!");
 
 var game = new Match();
+game.start();
 
 //Handling user input
 CLIENT.on('message', function(data) {
