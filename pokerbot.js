@@ -22,29 +22,35 @@ var suits = ["Spades", "Clubs", "Diamonds", "Hearts"];
 function Card(number, suit) {
     this.number = number;
     this.suit = suit;
-    function sameSuit(card) {
+    this.sameSuit = function(card) {
         return (this.suit == card.suit);
     }
-    function isAbove(card) {
+    this.isAbove = function(card) {
         return (this.number > card.number);
     }
 }
 
 function Deck() {
     this.cards = [];
-    function populate() {
+    this.populate = function() {
         for (s in suits) {
             for (var n = 1; n <= 13; n++) {
                 cards.push(new Card(n, suits[s]));
             }
         }
-    }
-    function addCard(card) {
+        cards.shu
+    };
+    this.addCard = function(card) {
         cards.push(card);
-    }
-    function randomCard() {
-        return cards[Math.floor(Math.random()*cards.length)];
-    }
+    };
+    this.removeCard = function(card) {
+        var index = cards.indexOf(card);
+        cards = cards.splice(index, 1);
+    };
+    this.randomCard = function() {
+        var c = cards[Math.floor(Math.random()*cards.length)];
+        this.removeCard(c);
+    };
 }
 
 function Player() {
@@ -52,26 +58,35 @@ function Player() {
     this.wins = 0;
     this.losses = 0;
     this.hand = [];
-    function giveCards(a, b) {
+    this.giveCards = function(a, b) {
         this.hand = [card, card];
-    }
-    function add(n) {
+    };
+    this.add = function(n) {
         this.brunos += n;
-    }
-    function subtract(n) {
+    };
+    this.subtract = function(n) {
         this.brunos -= n;
-    }
+    };
 }
 
-function Table() {
+function Round() {
     this.players = [];
     this.area = [];
     this.pot = 0;
-    function addPlayer(player) {
+    this.addPlayer = function(player) {
         players.push(player);
-    }
-    function kickPlayer(player) {
+    };
+    this.kickPlayer = function(player) {
         var index = players.indexOf(player);
         players = players.splice(index, 1);
-    }
+    };
 }
+
+
+// Booting up and doing the stuff
+CLIENT.submit("/login Dealer brunoisgod666");
+CLIENT.submit("/flair $Montserrat|#7e0800/^Dealer");
+CLIENT.submit("/font Monterrat");
+CLIENT.submit("/color #81aa00");
+CLIENT.submit("Pokerbot booted up and ready to go!");
+
