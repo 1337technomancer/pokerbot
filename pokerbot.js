@@ -217,7 +217,7 @@ CLIENT.on('message', function(data) {
     var trueMessage = parser.removeHTML(parser.parse(text));
     trueMessage = trueMessage.trim();
     argumentString = trueMessage.substring(trueMessage.indexOf(" ") + 1);
-    arguments = argumentString.split(" ");
+    var argumentsArray = argumentString.split(" ");
     
     if (name !== "Dealer") {
         
