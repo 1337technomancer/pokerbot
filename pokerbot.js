@@ -198,11 +198,11 @@ function getJoins() {
 }
 
 // Booting up and doing the stuff
-send("/login Dealer brunoisgod666");
+send("/login brunoisgod666 Dealer");
 send("/flair $Montserrat|#7e0800/^Dealer");
-send("/font Monterrat");
-send("/color #81aa00");
-send("Pokerbot by Bruno02468 booted up and ready to go!");
+send("/font Montserrat");
+send("/style #81aa00");
+send("Pokerbot coded by Bruno02468 booted up and ready to go!");
 
 var game = new Match();
 
@@ -216,7 +216,7 @@ CLIENT.on('message', function(data) {
     argumentString = trueMessage.substring(trueMessage.indexOf(" ") + 1);
     arguments = argumentString.split(" ");
     
-    if (name !== botnick) {
+    if (name !== "Dealer") {
         
         //COMMAND HANDLERS
         if (text.contains("!join")) {
