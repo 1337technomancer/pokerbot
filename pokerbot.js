@@ -10,7 +10,7 @@
  */
 
 // Configuration
-var waitForPlay = 10;
+var waitForJoin = 15;
 var waitForAction = 15;
 var initial = 1000;
 var rounds = 5;
@@ -18,7 +18,10 @@ var rounds = 5;
 // Setting up objects and basic game variables
 
 var suits = ["Spades", "Clubs", "Diamonds", "Hearts"];
-String.prototype.contains = function(it) { return this.toLowerCase().indexOf(it.toLowerCase()) != -1; };
+
+String.prototype.contains = function(it) { 
+    return this.toLowerCase().indexOf(it.toLowerCase()) != -1; 
+};
 
 
 function Card(number, suit) {
@@ -26,10 +29,32 @@ function Card(number, suit) {
     this.suit = suit;
     this.sameSuit = function(card) {
         return (this.suit == card.suit);
-    }
+    };
     this.isAbove = function(card) {
         return (this.number > card.number);
+    };
+    this.toString = function() {
+        var color = "#black";
+        if (this.suit == "Hearts" || this.suit == "Diamonds") 
+            color = "#red";
+        var n = number;
+        switch (this.number) {
+            case 1:
+                n = "Ace";
+                break;
+            case 11:
+                n = "Jack";
+                break;
+            case 12:
+                n = "Queen";
+                break;
+            case 13:
+                n = "King";
+                break;
+        }
+        return color + n + " of " + suit;
     }
+
 }
 
 function Deck() {
@@ -40,7 +65,6 @@ function Deck() {
                 cards.push(new Card(n, suits[s]));
             }
         }
-        cards.shu
     };
     this.addCard = function(card) {
         cards.push(card);
@@ -75,9 +99,22 @@ function Player(name) {
     };
 }
 
-function Round() {
+function Round(parent) {
     this.area = [];
     this.pot = 0;
+    this.players = parent.players;
+    this.start = function() {
+        send("A new round is starting! Cards are now being dealt!");
+        var deck = new Deck();
+        deck.populate();
+        for (p in players) {
+            var player = players[p];
+            var nhand = [deck.randomCard(), deck.randomCard()];
+            player.hand = nhand;
+            var msg = "You've been dealt: " + nhand[0].toString();
+            msg += " and " + nhand[1].toString() + ".";
+            player.pm(msg);
+        }
 }
 
 function Match() {
@@ -85,22 +122,26 @@ function Match() {
     this.roundcount = 1;
     this.players = [];
     this.start = function() {
-        CLIENT.submit("A new match is about to start! Hurry and join!");
-        CLIENT.submit("/?javascript:CLIENT.submit('!join');|Join!");
-        this.players = getJoins();
-        this.round = new Round();
+        send("A new match is about to start! Hurry and join!");
+        linksend("!join", "Join Match!");
+        var ps = getJoins();
+        for (i in ps) {
+            this.addPlayer(new Player(ps[i]));
+        }
+        this.round = new Round(this);
         this.round.start();
     };
     this.nextRound = function() {
         if (roundcount <= 5) {
             roundcount++;
-            this.round = new Round();
+            this.round = new Round(this);
+            this.round.start();
         } else {
             this.end();
         }
     };
     this.end = function() {
-        CLIENT.submit("Match ended, prepare for another one...");
+        send("Match ended, prepare for another one...");
         game = new Match();
     };
     this.addPlayer = function(player) {
@@ -121,7 +162,16 @@ function sleep(seconds) {
 }
 
 function pm(user, message) {
-    CLIENT.submit("/pm " + user + "|" + message);
+    send("/pm " + user + "|" + message);
+}
+
+function linksend(message, text) {
+    var m = "/?javascript:send(\"" + message + "\");|" + text;
+    send(m);
+}
+
+function send(message) {
+    CLIENT.submit(message);
 }
 
 var joining = false;
@@ -147,17 +197,16 @@ function getJoins() {
 }
 
 // Booting up and doing the stuff
-CLIENT.submit("/login Dealer brunoisgod666");
-CLIENT.submit("/flair $Montserrat|#7e0800/^Dealer");
-CLIENT.submit("/font Monterrat");
-CLIENT.submit("/color #81aa00");
-CLIENT.submit("Pokerbot booted up and ready to go!");
+send("/login Dealer brunoisgod666");
+send("/flair $Montserrat|#7e0800/^Dealer");
+send("/font Monterrat");
+send("/color #81aa00");
+send("Pokerbot by Bruno02468 booted up and ready to go!");
 
 var game = new Match();
 
 //Handling user input
 CLIENT.on('message', function(data) {
-    var r = $('#messages').children().slice(-1)[0].outerHTML.search(/message (personal-message|general-message|error-message|note-message|system-message)/g);
     var text = data.message.trim();
     if (data.nick !== undefined)
     var name = data.nick;
