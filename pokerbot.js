@@ -53,8 +53,7 @@ function Card(number, suit) {
                 break;
         }
         return color + n + " of " + suit;
-    }
-
+    };
 }
 
 function Deck() {
@@ -116,7 +115,7 @@ function Round(parent) {
             player.pm(msg);
         }
         send("End of round.");
-    }
+    };
 }
 
 function Match() {
