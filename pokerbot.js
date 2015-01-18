@@ -227,4 +227,4 @@ CLIENT.on('message', function(data) {
             
         }
     }
-}
+});
