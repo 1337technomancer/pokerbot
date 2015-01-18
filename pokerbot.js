@@ -115,6 +115,8 @@ function Round(parent) {
             msg += " and " + nhand[1].toString() + ".";
             player.pm(msg);
         }
+        send("End of round.");
+    }
 }
 
 function Match() {
