@@ -34,7 +34,7 @@ function Deck() {
     this.cards = [];
     function populate() {
         for (s in suits) {
-            for (var n = 1; n <= 13) {
+            for (var n = 1; n <= 13; n++) {
                 cards.push(new Card(n, suits[s]));
             }
         }
